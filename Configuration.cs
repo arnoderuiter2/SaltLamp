@@ -2,6 +2,6 @@
 {
     public class Configuration
     {
-        public Dictionary<string, string>? Buttons { get; set; }
+        public Dictionary<string, string>? Commands { get; set; }
     }
 }

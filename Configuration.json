@@ -1,5 +1,5 @@
 {
-    "Buttons": {
+    "Commands": {
         "Red": "LampState10",
         "Green": "LampState20",
         "Blue": "LampState30",

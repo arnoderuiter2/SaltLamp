@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:SaltLamp" 
         mc:Ignorable="d"
         Title="SaltLamp" 
-        MinWidth="800"
-        MinHeight="600"
+        MinWidth="600"
+        MinHeight="500"
         SizeToContent="WidthAndHeight">
 
     <Window.Resources>
@@ -15,30 +15,41 @@
             <Setter Property="Margin" Value="5" />
             <Setter Property="Padding" Value="5" />
         </Style>
-        <Style TargetType="{x:Type DataGrid}" >
-            <Setter Property="Margin" Value="5" />
-            <Setter Property="Padding" Value="5" />
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="0,5" />
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontWeight="Bold"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
 
     <StackPanel Margin="5">
-        <StackPanel Orientation="Horizontal">
-            <Button Content="Connect" Click="OnConnectClicked" />
-            <Button Content="Disconnect" Click="OnDisconnectClicked"  IsEnabled="{Binding CommandButtonsEnabled}" />
-        </StackPanel>
-        <ItemsControl ItemsSource="{Binding Path=Config.Buttons}" IsEnabled="{Binding CommandButtonsEnabled}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid IsItemsHost="True" Columns="3"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Button Content="{Binding Key}" Tag="{Binding Value}" Click="OnCommandClicked" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-        <ListBox MinHeight="500" ItemsSource="{Binding Messages}">            
-        </ListBox>
+        <GroupBox Header="Connection">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Connect" Click="OnConnectClicked" />
+                <Button Content="Disconnect" Click="OnDisconnectClicked"  IsEnabled="{Binding CommandButtonsEnabled}" />
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Commands">
+            <ItemsControl ItemsSource="{Binding Path=Config.Commands}" IsEnabled="{Binding CommandButtonsEnabled}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid IsItemsHost="True" Columns="3"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding Key}" Tag="{Binding Value}" Click="OnCommandClicked" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </GroupBox>
+        <GroupBox Header="Console output">
+            <ListBox MinHeight="250" ItemsSource="{Binding Messages}" />
+        </GroupBox>
     </StackPanel>
 </Window>
