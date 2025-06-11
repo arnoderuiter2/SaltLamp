@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaltLamp", "SaltLamp.csproj", "{441EE6A1-59AF-3BF3-2624-4B661B079223}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{441EE6A1-59AF-3BF3-2624-4B661B079223}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{441EE6A1-59AF-3BF3-2624-4B661B079223}.Debug|Any CPU.Build.0 = Debug|x64
+		{441EE6A1-59AF-3BF3-2624-4B661B079223}.Release|Any CPU.ActiveCfg = Release|x64
+		{441EE6A1-59AF-3BF3-2624-4B661B079223}.Release|Any CPU.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {06346DEB-5620-4D5D-83CC-C2235B4E38A0}
+	EndGlobalSection
+EndGlobal
