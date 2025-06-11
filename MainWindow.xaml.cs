@@ -1,8 +1,12 @@
 ﻿using InTheHand.Bluetooth;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -31,7 +35,8 @@ namespace SaltLamp
         public MainWindow()
         {
             InitializeComponent();
-            
+
+            LoadConfiguration();
             DataContext = this;
         }
 
@@ -49,10 +54,19 @@ namespace SaltLamp
         }
 
         public List<BluetoothDevice> Devices { get; private set; } = new List<BluetoothDevice>();
+        public Configuration? Config { get; private set; }
+        public ObservableCollection<string> Messages { get; private set; } = new ObservableCollection<string>();
+
+        private void LoadConfiguration()
+        {
+            string fileName = "Configuration.json";
+            string jsonString = File.ReadAllText(fileName);
+            Config = JsonSerializer.Deserialize<Configuration>(jsonString);
+        }
 
         private async void OnConnectClicked(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Requesting Bluetooth Device...");
+            Messages.Add("Requesting Bluetooth Device...");
 
             // Device ID = 7C9EBD4DD2E2 (ArnoIs50)
 
@@ -60,7 +74,7 @@ namespace SaltLamp
             if (_device != null)
             {              
                 _gatt = _device.Gatt;
-                Debug.WriteLine("Connecting to GATT Server...");
+                Messages.Add("Connecting to GATT Server...");
                 await _gatt.ConnectAsync();
 
                 /*var servs = await _device.Gatt.GetPrimaryServicesAsync();
@@ -106,30 +120,32 @@ namespace SaltLamp
                 }*/
 
 
-                Debug.WriteLine("Getting Service...");
-                var _service = await _gatt.GetPrimaryServiceAsync(BluetoothUuid.FromShortId(ServiceId));
+                Messages.Add("Getting Service...");
+                _service = await _gatt.GetPrimaryServiceAsync(BluetoothUuid.FromShortId(ServiceId));
                 if (_service != null)
                 {
-                    Debug.WriteLine("Getting Characteristic...");
+                    Messages.Add("Getting Characteristic...");
                     _characteristic = await _service.GetCharacteristicAsync(BluetoothUuid.FromShortId(ChanracteristicId));
 
-                    Debug.WriteLine("Writing initial value...");
+                    Messages.Add("Writing initial value...");
                     WriteToDeviceAsync("LampState0");
 
                     CommandButtonsEnabled = true;
                 }
+                else
+                {
+                    Messages.Add("Failed to get service");
+                }
             }
-
-            Debug.WriteLine("Finished");
         }
 
         private void OnDisconnectClicked(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Disconnect from Bluetooth device...");
+            Messages.Add("Disconnect from Bluetooth device...");
 
+            _characteristic = null;
             _gatt?.Disconnect();
             _device?.Dispose();
-            _characteristic = null;
 
             CommandButtonsEnabled = false;
         }
@@ -148,11 +164,11 @@ namespace SaltLamp
         {
             if (_characteristic == null)
             {
-                Debug.WriteLine("Characteristic not set");
+                Messages.Add("Characteristic not set");
                 return;
             }
 
-            Debug.WriteLine("Writing value...");
+            Messages.Add($"Writing value {value} ...");
             var bytes = Encoding.ASCII.GetBytes(value);
 
             await _characteristic.WriteValueWithoutResponseAsync(bytes);

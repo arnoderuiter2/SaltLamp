@@ -17,4 +17,10 @@
     <PackageReference Include="InTheHand.Net.Bluetooth" Version="4.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Configuration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

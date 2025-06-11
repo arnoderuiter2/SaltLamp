@@ -6,6 +6,8 @@
         xmlns:local="clr-namespace:SaltLamp" 
         mc:Ignorable="d"
         Title="SaltLamp" 
+        MinWidth="800"
+        MinHeight="600"
         SizeToContent="WidthAndHeight">
 
     <Window.Resources>
@@ -18,36 +20,25 @@
             <Setter Property="Padding" Value="5" />
         </Style>
     </Window.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="25"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
 
-        <Button Grid.Column="0" Grid.Row="0" Content="Connect" Click="OnConnectClicked" />
-        <Button Grid.Column="1" Grid.Row="0" Content="Disconnect" Click="OnDisconnectClicked"  IsEnabled="{Binding CommandButtonsEnabled}" />
-
-        <Button Grid.Column="0" Grid.Row="2" Content="Off" Click="OnCommandClicked" Tag="LampState0" IsEnabled="{Binding CommandButtonsEnabled}"/>
-        <Button Grid.Column="1" Grid.Row="2" Content="Red" Click="OnCommandClicked" Tag="LampState10" IsEnabled="{Binding CommandButtonsEnabled}"/>
-        <Button Grid.Column="2" Grid.Row="2" Content="Green" Click="OnCommandClicked" Tag="LampState20" IsEnabled="{Binding CommandButtonsEnabled}"/>
-        <Button Grid.Column="3" Grid.Row="2" Content="Blue" Click="OnCommandClicked" Tag="LampState30" IsEnabled="{Binding CommandButtonsEnabled}"/>
-        <Button Grid.Column="1" Grid.Row="3" Content="Red Loop" Click="OnCommandClicked" Tag="LampState40" IsEnabled="{Binding CommandButtonsEnabled}"/>
-        <Button Grid.Column="2" Grid.Row="3" Content="Green Loop" Click="OnCommandClicked" Tag="LampState50" IsEnabled="{Binding CommandButtonsEnabled}"/>
-        <Button Grid.Column="3" Grid.Row="3" Content="Blue Loop" Click="OnCommandClicked" Tag="LampState60" IsEnabled="{Binding CommandButtonsEnabled}"/>
-        <Button Grid.Column="1" Grid.Row="4" Content="Red Blink" Click="OnCommandClicked" Tag="LampState70" IsEnabled="{Binding CommandButtonsEnabled}"/>
-        <Button Grid.Column="2" Grid.Row="4" Content="Green Blink" Click="OnCommandClicked" Tag="LampState80" IsEnabled="{Binding CommandButtonsEnabled}"/>
-        <Button Grid.Column="3" Grid.Row="4" Content="Blue Blink" Click="OnCommandClicked" Tag="LampState90" IsEnabled="{Binding CommandButtonsEnabled}"/>
-    </Grid>
-
-
+    <StackPanel Margin="5">
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Connect" Click="OnConnectClicked" />
+            <Button Content="Disconnect" Click="OnDisconnectClicked"  IsEnabled="{Binding CommandButtonsEnabled}" />
+        </StackPanel>
+        <ItemsControl ItemsSource="{Binding Path=Config.Buttons}" IsEnabled="{Binding CommandButtonsEnabled}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid IsItemsHost="True" Columns="3"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Content="{Binding Key}" Tag="{Binding Value}" Click="OnCommandClicked" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <ListBox MinHeight="500" ItemsSource="{Binding Messages}">            
+        </ListBox>
+    </StackPanel>
 </Window>

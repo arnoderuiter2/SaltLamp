@@ -1,0 +1,14 @@
+{
+    "Buttons": {
+        "Red": "LampState10",
+        "Green": "LampState20",
+        "Blue": "LampState30",
+        "Red Loop": "LampState40",
+        "Green Loop": "LampState50",
+        "Blue Loop": "LampState60",
+        "Red Blink": "LampState70",
+        "Green Blink": "LampState80",
+        "Blue Blink": "LampState90",
+        "Off": "LampState0"
+    }
+}
