@@ -59,8 +59,8 @@ namespace SaltLamp
 
         private void LoadConfiguration()
         {
-            string fileName = "Configuration.json";
-            string jsonString = File.ReadAllText(fileName);
+            var fileName = "Configuration.json";
+            var jsonString = File.ReadAllText(fileName);
             Config = JsonSerializer.Deserialize<Configuration>(jsonString);
         }
 
