@@ -10,7 +10,14 @@
     <SupportedOSPlatformVersion>10.0.22621.0</SupportedOSPlatformVersion>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+    <ApplicationIcon>images\saltlamp.ico</ApplicationIcon>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="images\saltlamp.ico" />
+    <Resource Include="images\saltlamp.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.41" />
