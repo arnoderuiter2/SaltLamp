@@ -1,4 +1,7 @@
 ﻿using InTheHand.Bluetooth;
+using InTheHand.Net;
+using InTheHand.Net.Bluetooth;
+using InTheHand.Net.Sockets;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -29,6 +32,9 @@ namespace SaltLamp
         private GattService _service;
         private RemoteGattServer _gatt;
         private GattCharacteristic? _characteristic;
+        private bool _panelLoading;
+        private string _panelMainMessage = "Connecting to device ...";
+        private string _panelSubMessage = string.Empty; //
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -38,6 +44,9 @@ namespace SaltLamp
 
             LoadConfiguration();
             DataContext = this;
+
+            // Auto connect to configured device
+            AutoConnect(Config?.DeviceName ?? string.Empty);
         }
 
         public bool CommandButtonsEnabled 
@@ -57,6 +66,61 @@ namespace SaltLamp
         public Configuration? Config { get; private set; }
         public ObservableCollection<string> Messages { get; private set; } = new ObservableCollection<string>();
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [panel loading].
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if [panel loading]; otherwise, <c>false</c>.
+        /// </value>
+        public bool PanelLoading
+        {
+            get
+            {
+                return _panelLoading;
+            }
+            set
+            {
+                _panelLoading = value;
+                NotifyPropertyChanged("PanelLoading");
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the panel main message.
+        /// </summary>
+        /// <value>The panel main message.</value>
+        public string PanelMainMessage
+        {
+            get
+            {
+                return _panelMainMessage;
+            }
+            set
+            {
+                _panelMainMessage = value;
+                NotifyPropertyChanged("PanelMainMessage");
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the panel sub message.
+        /// </summary>
+        /// <value>The panel sub message.</value>
+        public string PanelSubMessage
+        {
+            get
+            {
+                return _panelSubMessage;
+            }
+            set
+            {
+                _panelSubMessage = value;
+                NotifyPropertyChanged("PanelSubMessage");
+            }
+        }
+
+
+
         private void LoadConfiguration()
         {
             string fileName = "Configuration.json";
@@ -64,15 +128,82 @@ namespace SaltLamp
             Config = JsonSerializer.Deserialize<Configuration>(jsonString);
         }
 
-        private async void OnConnectClicked(object sender, RoutedEventArgs e)
+        private async void AutoConnect(string deviceName)
         {
-            Messages.Add("Requesting Bluetooth Device...");
+            PanelMainMessage = $"Connecting to device {deviceName}...";
+            PanelLoading = true;
+
+            if (string.IsNullOrEmpty(deviceName))
+            {
+                // See what devices are available
+                _device = await Bluetooth.RequestDeviceAsync(new RequestDeviceOptions { AcceptAllDevices = true });
+                return;
+            }
+
+            Messages.Add($"Autoconnect to Bluetooth Device {deviceName}...");
 
             // Device ID = 7C9EBD4DD2E2 (ArnoIs50)
+            // Device ID = 38182B89FE16 (TestBLE)
+            var filter = new BluetoothLEScanFilter
+            {
+                Name = deviceName
+            };
+            var options = new RequestDeviceOptions();
+            options.Filters.Add(filter);
+            //_device = await Bluetooth.RequestDeviceAsync(options);
+            var devices = await Bluetooth.ScanForDevicesAsync(options);
+            if (devices.Count > 0)
+            {
+                _device = devices.First();
+            }
+
+            if (_device != null)
+            {
+                _gatt = _device.Gatt;
+                PanelSubMessage = "Connecting to GATT Server...";
+                Messages.Add(PanelSubMessage);
+                await _gatt.ConnectAsync();
+
+                PanelSubMessage = "Getting Service...";
+                Messages.Add(PanelSubMessage);
+                _service = await _gatt.GetPrimaryServiceAsync(BluetoothUuid.FromShortId(ServiceId));
+                if (_service != null)
+                {
+                    PanelSubMessage = "Getting Characteristic...";
+                    Messages.Add(PanelSubMessage);
+                    _characteristic = await _service.GetCharacteristicAsync(BluetoothUuid.FromShortId(ChanracteristicId));
+
+                    Messages.Add("Writing initial value...");
+                    WriteToDeviceAsync("LampState0");
+
+                    CommandButtonsEnabled = true;
+                }
+                else
+                {
+                    Messages.Add("Failed to get service");
+                }
+            }
+            else
+            {
+                Messages.Add("Failed to connect to device");
+            }
+
+            PanelLoading = false;
+        }
+
+        private async void OnConnectClicked(object sender, RoutedEventArgs e)
+        {
+            if (Config == null)
+            {
+                Messages.Add("No configuration...");
+                return;
+            }
+
+            Messages.Add("Requesting Bluetooth Device...");
 
             _device = await Bluetooth.RequestDeviceAsync(new RequestDeviceOptions { AcceptAllDevices = true });
             if (_device != null)
-            {              
+            {
                 _gatt = _device.Gatt;
                 Messages.Add("Connecting to GATT Server...");
                 await _gatt.ConnectAsync();

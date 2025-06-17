@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ctr="clr-namespace:SaltLamp.Controls"
         xmlns:local="clr-namespace:SaltLamp" 
         mc:Ignorable="d"
         Title="SaltLamp" 
@@ -27,29 +28,39 @@
         </Style>
     </Window.Resources>
 
-    <StackPanel Margin="5">
-        <GroupBox Header="Connection">
-            <StackPanel Orientation="Horizontal">
-                <Button Content="Connect" Click="OnConnectClicked" />
-                <Button Content="Disconnect" Click="OnDisconnectClicked"  IsEnabled="{Binding CommandButtonsEnabled}" />
-            </StackPanel>
-        </GroupBox>
-        <GroupBox Header="Commands">
-            <ItemsControl ItemsSource="{Binding Path=Config.Commands}" IsEnabled="{Binding CommandButtonsEnabled}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid IsItemsHost="True" Columns="3"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Content="{Binding Key}" Tag="{Binding Value}" Click="OnCommandClicked" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </GroupBox>
-        <GroupBox Header="Console output">
-            <ListBox MinHeight="250" ItemsSource="{Binding Messages}" />
-        </GroupBox>
-    </StackPanel>
+    <Grid>
+        <StackPanel Margin="5">
+            <GroupBox Header="Connection" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Connect" Click="OnConnectClicked" />
+                    <Button Content="Disconnect" Click="OnDisconnectClicked"  IsEnabled="{Binding CommandButtonsEnabled}" />
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Commands">
+                <ItemsControl ItemsSource="{Binding Path=Config.Commands}" IsEnabled="{Binding CommandButtonsEnabled}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid IsItemsHost="True" Columns="3"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Key}" Tag="{Binding Value}" Click="OnCommandClicked" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </GroupBox>
+            <GroupBox Header="Console output">
+                <ListBox MinHeight="250" ItemsSource="{Binding Messages}" />
+            </GroupBox>
+        </StackPanel>
+        <Grid VerticalAlignment="Bottom">
+            <ctr:LoadingPanel x:Name="loadingPanel" 
+                              MaxWidth="600"
+                    IsLoading="{Binding PanelLoading}"
+                    Message="{Binding PanelMainMessage}"
+                    SubMessage="{Binding PanelSubMessage}" 
+                    ClosePanelCommand="{Binding PanelCloseCommand}" />
+        </Grid>
+    </Grid>
 </Window>
