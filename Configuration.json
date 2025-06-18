@@ -1,5 +1,5 @@
 {
-    "DeviceName" : "TestBLE",
+    "DeviceName" : "ArnoIs50",
     "Commands": {
         "Red": "LampState10",
         "Green": "LampState20",
